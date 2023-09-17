@@ -53,6 +53,7 @@ readlog () {
 	NICK=""
 	LASTNICK=""
 	while true; do
+ 		LOGTIME="[$(date +"%Y%b%d %H:%M:%S")]"
 		# Get latest information from LGSM Valheim server log and check to see if there are new events
 		LATEST=$(tail -n 10 $SERVERLOG)
 		if [[ $LATEST != $LAST ]]
