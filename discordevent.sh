@@ -13,22 +13,22 @@ declare -A players
 
 # Random events names as defined by Valheim wiki at https://valheim.fandom.com/wiki/Events
 declare -A raids
-raids[army_eikthyr]="Eikthyr rallies the creatures of the forest against you!"
-raids[army_theelder]="The forest is moving with blue eyes gleaming!"
-raids[army_bonemass]="A foul smell from the swamp brings the undead to your door!"
-raids[army_moder]="A cold wind blows from the mountains as the skies fill with screeching!"
-raids[army_goblin]="The Fuling horde is hell bent on destruction!"
-raids[foresttrolls]="The ground is shaking as big blue bastards begin breaking shit!"
-raids[blobs]="A foul smell from the swamp brings green blobs!"
-raids[skeletons]="There's a Skeleton Surprise!  Time to break some bones!"
-raids[surtlings]="There's a smell of sulfur in the air as surtlings reign fire!"
-raids[wolves]="You are being hunted by wolves!"
-raids[bats]="Batting wings, shrieks, and fangs whirl around your home!"
-raids[army_gjall]="Gjall reigns his ticks and bile upon your dwelling!"
-raids[army_seekers]="They seek those that threaten their Queen!"
-raids[hildirboss1]="Brenna seeks her fiery revenge!"
-raids[hildirboss2]="Geirrhafa seeks his chilly revenge!"
-raids[hildirboss3]="Zil and Thungr seek their brotherly revenge!"
+raids[army_eikthyr]=":deer::boar: Eikthyr rallies the creatures of the forest against you! :boar::deer:"
+raids[army_theelder]=":evergreen_tree::wood: The forest is moving with blue eyes gleaming! :wood::evergreen_tree:"
+raids[army_bonemass]=":pirate_flag: A foul smell from the swamp brings the undead to your door! :pirate_flag:"
+raids[army_moder]=":cloud_snow: A cold wind blows from the mountains as the skies fill with screeching! :snowflake:"
+raids[army_goblin]=":smiling_imp: The Fuling horde is hell bent on destruction! :smiling_imp:"
+raids[foresttrolls]=":troll: The ground is shaking as big blue bastards begin breaking shit! :troll:"
+raids[blobs]=":microbe: A foul smell from the swamp brings green blobs! :microbe:"
+raids[skeletons]=":skull_crossbones: There's a Skeleton Surprise!  Time to break some bones! :skull_crossbones:"
+raids[surtlings]=":fire: There's a smell of sulfur in the air as surtlings reign fire! :fire:"
+raids[wolves]=":wolf: You are being hunted by wolves! :wolf:"
+raids[bats]=":bat: Batting wings, shrieks, and fangs whirl around your home! :bat:"
+raids[army_gjall]=":beetle::fire: Gjall reigns his ticks and bile upon your dwelling! :fire::beetle:"
+raids[army_seekers]=":fly: They seek those that threaten their Queen! :fly:"
+raids[hildirboss1]=":fire::skull_crossbones: Brenna seeks her fiery revenge! :skull_crossbones::fire:"
+raids[hildirboss2]=":cold_face: Geirrhafa seeks his chilly revenge! :cold_face:"
+raids[hildirboss3]=":imp::mage: Zil and Thungr seek their brotherly revenge! :mage::imp:"
 
 echo "$LOGTIME Starting Valheim Discord Event Log" >> $LOGFILE
 init () {
@@ -67,7 +67,7 @@ readlog () {
 				RAIDVAR=$(echo "${RAIDVAR##*$'\n'}")
 				if [[ $LASTRAID != $RAIDTIME ]]; then
 					RAIDMSG=${raids[$RAIDVAR]}
-					JSON='{"username": "RAID EVENT", "content": "'$RAIDMSG'"}'
+					JSON='{"username": "RAID EVENT", "content": ":crossed_swords: RAID: '$RAIDMSG'"}'
 					echo "$LOGTIME Found $RAIDVAR and sent ${raids[$RAIDVAR]}" >> $LOGFILE
 					echo "Found $RAIDVAR and sent ${raids[$RAIDVAR]} from last raid"
 					curl --connect-timeout 10 -sSL -H "Content-Type: application/json" -X POST -d "$JSON" "$DISCORDWEBHOOK"
@@ -84,7 +84,7 @@ readlog () {
 				echo "Death name is $DEATHVAR"
 				if [[ $LASTDEATH != $DEATHTIME ]]; then
 					LASTDEATH=$DEATHTIME
-					DEATHMSG=$DEATHVAR' has met their demise!'
+					DEATHMSG=':headstone::skull_crossbones: '$DEATHVAR' has met their demise!'
 					DEATHJSON='{"username": "DEATH EVENT", "content": "'$DEATHMSG'"}'
 					echo "$LOGTIME Found $DEATHVAR and sent $DEATHMSG" >> $LOGFILE
 					echo "Found $DEATHVAR and sent $DEATHMSG"
@@ -122,7 +122,7 @@ readlog () {
 					players[${STEAMID[0]}]=$NICK
 					echo "$LOGTIME SteamID $STEAMID connected as ${players[${STEAMID[0]}]}" >> $LOGFILE
 					echo "SteamID $STEAMID connected as ${players[${STEAMID[0]}]}"
-					CONNECTMSG='{"username": "NEW VIKING", "content": "'${players[${STEAMID[0]}]}' has joined."}'
+					CONNECTMSG='{"username": "NEW VIKING", "content": ":crossed_swords: '${players[${STEAMID[0]}]}' has joined."}'
 					curl --connect-timeout 10 -sSL -H "Content-Type: application/json" -X POST -d "$CONNECTMSG" "$DISCORDWEBHOOK"
 					CONNECTMSG=""
 					NICK=""
@@ -140,7 +140,7 @@ readlog () {
 				echo "$LOGTIME SteamID $DISCONNECT ${players[$DISCONNECT]} disconnected" >> $LOGFILE
 				echo "SteamID $DISCONNECT ${players[$DISCONNECT]} disconnected"
 				if [ ${players[$DISCONNECT]+_} ]; then
-					DISCONNECTMSG='{"username": "TIL VALHALLA", "content": "'${players[$DISCONNECT]}' has disconnected."}'
+					DISCONNECTMSG='{"username": "TIL VALHALLA", "content": ":shield: '${players[$DISCONNECT]}' has disconnected."}'
 					curl --connect-timeout 10 -sSL -H "Content-Type: application/json" -X POST -d "$DISCONNECTMSG" "$DISCORDWEBHOOK"
 					if [[ $LASTNICK == ${players[$DISCONNECT]} ]]; then
 						echo "LASTNICK still holds disconnecting player $LASTNICK, reset to null"
