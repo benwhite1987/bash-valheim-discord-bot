@@ -1,4 +1,7 @@
-<h4 align="center">
+# Valheim Discord Notifier in Bash
+Simple Bash script that reads Valheim server logs to send Discord messages on Raids, Deaths, Joins, and Disconnects.  Written by a hobbyist with zero professional programming training or experience, so use as-is and feel free to make improvements.
+
+<h4 align="left">
   <br>
   <a href="https://github.com/benwhite1987/bash-valheim-discord-bot">
   <picture>
@@ -9,9 +12,6 @@
   <br>
   <br>
 </h4>
-
-# Valheim Discord Notifier in Bash
-Simple Bash script that reads Valheim server logs to send Discord messages on Raids, Deaths, Joins, and Disconnects.  Written by a hobbyist with zero professional programming training or experience, so use as-is and feel free to make improvements.
 
 ## Benefits
 + Only requires Bash and a vanilla Valheim server installation.  Nicer solutions exist, but most require Python, Bepinex on the server (which consistently breaks with updates), or other frameworks.
