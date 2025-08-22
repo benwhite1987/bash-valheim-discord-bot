@@ -26,3 +26,6 @@ Simple Bash script that reads Valheim server logs to send Discord messages on Ra
 + Replace `SERVERLOG=` with the path to your server log.
 + Replace `DISCORDWEBHOOK=` with the hyperlink to your Discord channel's webhook.
 + Start script with `./discordevent.sh`.  For persistence, create a systemd service and enable it to start on boot.  See this [systemd service guide](https://linuxhandbook.com/create-systemd-services/) for more details.
+
+## Updates
++ 2025 Aug 22 - Added Ashland Raids, refactored and simplified connections and disconnections with PlayFab (Crossplay) rather than Steam IDs, improved RegEx to get full player names
