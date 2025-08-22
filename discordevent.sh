@@ -18,14 +18,17 @@ raids[army_theelder]=":evergreen_tree::wood: The forest is moving with blue eyes
 raids[army_bonemass]=":pirate_flag: A foul smell from the swamp brings the undead to your door! :pirate_flag:"
 raids[army_moder]=":cloud_snow: A cold wind blows from the mountains as the skies fill with screeching! :snowflake:"
 raids[army_goblin]=":smiling_imp: The Fuling horde is hell bent on destruction! :smiling_imp:"
+raids[army_gjall]=":beetle::fire: Gjall reigns his ticks and bile upon your dwelling! :fire::beetle:"
+raids[army_seekers]=":fly: They seek those that threaten their Queen! :fly:"
+raids[army_charred]=":skull::hot_face: The undead army of ash marches. :hot_face::skull"
+raids[army_charredspawners]=":skull::hot_face: The ashen undead have been summoned! :hot_face::skull"
 raids[foresttrolls]=":troll: The ground is shaking as big blue bastards begin breaking shit! :troll:"
 raids[blobs]=":microbe: A foul smell from the swamp brings green blobs! :microbe:"
+raids[ghosts]=":ghost: You feel a chill down your spine... :ghost:"
 raids[skeletons]=":skull_crossbones: There's a Skeleton Surprise!  Time to break some bones! :skull_crossbones:"
 raids[surtlings]=":fire: There's a smell of sulfur in the air as surtlings reign fire! :fire:"
 raids[wolves]=":wolf: You are being hunted by wolves! :wolf:"
 raids[bats]=":bat: Batting wings, shrieks, and fangs whirl around your home! :bat:"
-raids[army_gjall]=":beetle::fire: Gjall reigns his ticks and bile upon your dwelling! :fire::beetle:"
-raids[army_seekers]=":fly: They seek those that threaten their Queen! :fly:"
 raids[hildirboss1]=":fire::skull_crossbones: Brenna seeks her fiery revenge! :skull_crossbones::fire:"
 raids[hildirboss2]=":cold_face: Geirrhafa seeks his chilly revenge! :cold_face:"
 raids[hildirboss3]=":imp::mage: Zil and Thungr seek their brotherly revenge! :mage::imp:"
@@ -48,10 +51,6 @@ readlog () {
 	LATEST=""
 	LASTRAID=""
 	LASTDEATH=""
-	LASTJOIN=""
-	STEAMID=()
-	NICK=""
-	LASTNICK=""
 	while true; do
  		LOGTIME="[$(date +"%Y%b%d %H:%M:%S")]"
 		# Get latest information from LGSM Valheim server log and check to see if there are new events
@@ -93,60 +92,33 @@ readlog () {
 					DEATHJSON=""
 				fi
 			fi
-			# RegEx to identify a new connection, get SteamID of new player and put into an array to handle multiple connections and player nicks
-			NEWCONNECT=$(echo $LATEST | grep -oP '(?<=Got connection SteamID )(\w+)')
-			if [[ $NEWCONNECT != "" ]]
+			# RegEx to identify a new connection, get PlayFabID of new player and put into an array to handle multiple connections and player nicks
+			NEWCONNECT=$(echo $LATEST | grep -oP '(?<=Got character ZDOID from )(.+?(?=:)): (\S+(?=:))')
+			if [[ $NEWCONNECT != "" ]];
 			then
-				NEWCONNECT=$(echo "${NEWCONNECT##*$'\n'}")
-				if [ ${players[$NEWCONNECT]+_} ]; then
-					echo "User $NEWCONNECT already exists"
+				NEWNAME=$(echo $NEWCONNECT | grep -oP '.+?(?= :)')
+				PLAYFABID=$(echo $NEWCONNECT | grep -oP '(?<=: )(\S+)')
+				if [ ${players[$PLAYFABID]+_} ]; then
+					echo "User $PLAYFABID already exists"
 				else
-					if [[ $LASTJOIN != $NEWCONNECT ]];then
-						LASTJOIN=$NEWCONNECT
-						STEAMID+=("$NEWCONNECT")
-						echo "$LOGTIME ${STEAMID[-1]}"' new connection!' >> $LOGFILE
-						echo "${STEAMID[-1]}"' new connection!'
-					fi
-				fi
-			fi
-			# If we have a SteamID in the array, then use RegEx to start looking for a player name.
-			# This is assumes first in first out as the server logs don't associate SteamIDs with names for us.
-			# Send new player Discord message, add name and SteamID to player array, then unset SteamID in SteamID array
-			if [[ ${#STEAMID[@]} != 0 ]]; then
-				NICK=$(echo $LATEST | grep -oP '(?<=Got character ZDOID from )(\S+)')
-				NICK=$(echo "${NICK##*$'\n'}")
-				echo "$LOGTIME $NICK join name found" >> $LOGFILE
-				echo "$NICK join name found"
-				if [[ $NICK != "" && $LASTNICK != $NICK ]]; then
-					LASTNICK=$NICK
-					players[${STEAMID[0]}]=$NICK
-					echo "$LOGTIME SteamID $STEAMID connected as ${players[${STEAMID[0]}]}" >> $LOGFILE
-					echo "SteamID $STEAMID connected as ${players[${STEAMID[0]}]}"
-					CONNECTMSG='{"username": "NEW VIKING", "content": ":crossed_swords: '${players[${STEAMID[0]}]}' has joined."}'
+					players[${PLAYFABID}]=$NEWNAME
+					CONNECTMSG='{"username": "NEW VIKING", "content": ":crossed_swords: '${players[${PLAYFABID}]}' has joined."}'
 					curl --connect-timeout 10 -sSL -H "Content-Type: application/json" -X POST -d "$CONNECTMSG" "$DISCORDWEBHOOK"
 					CONNECTMSG=""
-					NICK=""
-					STEAMID=("${STEAMID[@]:1}")
-					echo "Join array ${STEAMID[@]} after unset"
-					echo "$LOGTIME Join array ${STEAMID[@]} after unset" >> $LOGFILE
-					LASTJOIN=""
+					PLAYFABID=""
+					NEWNAME=""
 				fi
 			fi
-			# RegEx to identify player disconnect, send disconnect Discord message, and remove player name and SteamID from player array
-			DISCONNECT=$(echo $LATEST | grep -oP '(?<=Closing socket )(\w+)')
+			# RegEx to identify player disconnect, send disconnect Discord message, and remove player name and PlayFabID from player array
+			DISCONNECT=$(echo $LATEST | grep -oP '(?<=Destroying abandoned non persistent zdo ).+?(?=:)')
 			if [[ $DISCONNECT != "" ]]
 			then
 				DISCONNECT=$(echo "${DISCONNECT##*$'\n'}")
-				echo "$LOGTIME SteamID $DISCONNECT ${players[$DISCONNECT]} disconnected" >> $LOGFILE
-				echo "SteamID $DISCONNECT ${players[$DISCONNECT]} disconnected"
+				echo "$LOGTIME PlayFabID $DISCONNECT ${players[$DISCONNECT]} disconnected" >> $LOGFILE
+				echo "PlayFabID $DISCONNECT ${players[$DISCONNECT]} disconnected"
 				if [ ${players[$DISCONNECT]+_} ]; then
 					DISCONNECTMSG='{"username": "TIL VALHALLA", "content": ":shield: '${players[$DISCONNECT]}' has disconnected."}'
 					curl --connect-timeout 10 -sSL -H "Content-Type: application/json" -X POST -d "$DISCONNECTMSG" "$DISCORDWEBHOOK"
-					if [[ $LASTNICK == ${players[$DISCONNECT]} ]]; then
-						echo "LASTNICK still holds disconnecting player $LASTNICK, reset to null"
-						echo "$LOGTIME LASTNICK still holds disconnecting player $LASTNICK, reset to null" >> $LOGFILE
-						LASTNICK=""
-					fi
 					unset players[$DISCONNECT]
 					DISCONNECTMSG=""
 				else
