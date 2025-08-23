@@ -74,8 +74,8 @@ readlog () {
 				fi
 			fi
 			# RegEx to pull a Player Death line, parse player name, log time to prevent repeat messages, and send Discord message
-			DEATHLINE=$(echo $LATEST | grep -oP '(\d{2}\/\d{2}\/\d{4}\s\d{2}\:\d{2}\:\d{2}\:\s)(Got character ZDOID from \S+ : 0:0)')
-			DEATHVAR=$(echo $DEATHLINE | grep -oP '(?<=Got character ZDOID from )(\S+)(?= : 0:0)')
+			DEATHLINE=$(echo $LATEST | grep -oP '(\d{2}\/\d{2}\/\d{4}\s\d{2}\:\d{2}\:\d{2}\:\s)(Got character ZDOID from )(.+?(?=:))(: 0:0)')
+			DEATHVAR=$(echo $DEATHLINE | grep -oP '(?<=Got character ZDOID from )(.+?(?= : 0:0))')
 			DEATHTIME=$(echo $DEATHLINE | grep -oP '(\d{2}\/\d{2}\/\d{4}\s\d{2}\:\d{2}\:\d{2})')
 			if [[ $DEATHVAR != "" ]]
 			then
