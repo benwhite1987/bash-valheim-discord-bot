@@ -79,7 +79,6 @@ readlog () {
 			DEATHTIME=$(echo $DEATHLINE | grep -oP '(\d{2}\/\d{2}\/\d{4}\s\d{2}\:\d{2}\:\d{2})')
 			if [[ $DEATHVAR != "" ]]
 			then
-				DEATHVAR=$(echo "${DEATHVAR##*$'\n'}")
 				echo "Death name is $DEATHVAR"
 				if [[ $LASTDEATH != $DEATHTIME ]]; then
 					LASTDEATH=$DEATHTIME
