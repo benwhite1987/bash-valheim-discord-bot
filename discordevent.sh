@@ -18,6 +18,7 @@ last_processed_line=0
 
 ################################################################################
 # Event Definitions
+# See: https://valheim.fandom.com/wiki/Events for detailed information
 ################################################################################
 
 declare -A raids=(
